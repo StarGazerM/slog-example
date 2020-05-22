@@ -1,0 +1,60 @@
+; 2SAT problem in slog
+
+; EDB
+
+; facts
+; Pos	x0	Pos	x2
+; Pos	x0	Neg	x3
+; Pos	x2	Neg	x3
+; Pos	x1	Neg	x4
+; Neg	x2	Neg	x4
+; Neg	x0	Neg	x5
+; Neg	x1	Neg	x5
+; Neg	x2	Neg	x5
+; Pos	x3	Pos	x6
+; Pos	x4	Pos	x6
+; Pos	x5	Pos	x6
+; Pos	x6	Neg	x2
+; Neg	x6	Pos	x2
+; Neg	x6	Neg	x2
+
+; (s-and
+;   (s-or (var "pos" "x0") (var "neg" "x2"))
+;   (s-or (var "pos" "x0") (var "neg" "x3"))
+;   (s-or (var "pos" "x2") (var "neg" "x3"))
+;   (s-or (var "pos" "x1") (var "neg" "x4"))
+;   (s-or (var "neg" "x2") (var "neg" "x4"))
+;   (s-or (var "neg" "x0") (var "neg" "x5"))
+;   (s-or (var "neg" "x1") (var "neg" "x5"))
+;   (s-or (var "neg" "x2") (var "neg" "x5"))
+;   (s-or (var "pos" "x3") (var "pos" "x6"))
+;   (s-or (var "pos" "x4") (var "pos" "x6"))
+;   (s-or (var "pos" "x5") (var "pos" "x6"))
+;   (s-or (var "pos" "x6") (var "neg" "x2"))
+;   (s-or (var "neg" "x6") (var "pos" "x2"))
+;   (s-or (var "neg" "x6") (var "neg" "x2")))
+
+(s-or "pos" "x0" "neg" "x2")
+(s-or "pos" "x0" "neg" "x3")
+(s-or "pos" "x2" "neg" "x3")
+(s-or "pos" "x1" "neg" "x4")
+(s-or "neg" "x2" "neg" "x4")
+(s-or "neg" "x0" "neg" "x5")
+(s-or "neg" "x1" "neg" "x5")
+(s-or "neg" "x2" "neg" "x5")
+(s-or "pos" "x3" "pos" "x6")
+(s-or "pos" "x4" "pos" "x6")
+(s-or "pos" "x5" "pos" "x6")
+(s-or "pos" "x6" "neg" "x2")
+(s-or "neg" "x6" "pos" "x2")
+(s-or "neg" "x6" "neg" "x2")
+
+(not "pos" "neg")
+(not "neg" "pos")
+
+; ivar is implied varible relation
+[(implies m u n v) <-- (not m p) (s-or p u var n v)]
+[(implies m u n v) <-- (not m p) (s-or n v p u)]
+[(implies m u n v) <-- (implies m u p w) (implies p w n v)]
+
+[(inconsitence u) <-- (implies "pos" u "neg" u) (impiles "neg" u "pos" u)]
