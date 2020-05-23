@@ -1,0 +1,21 @@
+; anderson style point to analysis 
+
+; a = &b
+; c = &d
+; e = &a
+; f = a
+; a = *b
+; *e = c
+
+(assign "f" "a")
+(load "a" "b")
+(store "e" "c")
+
+(address-of "a" "b")
+(address-of "c" "d")
+(address-of "e" "a")
+
+[(point-to y x) <-- (address-of y x)]
+[(point-to y x) <-- (assign y z) (point-to z x)]
+[(point-to y w) <-- (load y x) (point-to x z) (point-to z w)]
+[(point-to z w) <-- (store y x) (point-to y z) (point-to x w)]
