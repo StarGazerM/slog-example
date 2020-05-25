@@ -2,17 +2,18 @@
 ; ((lambda (x) x) (lambda (y) y))
 
 ; (FACT id _ ...)
-(app (lambda (arg "x") (var "x"))
+(app (lambda (arg "x") (app (var "x") (var "x")))
      (lambda (arg "y") (var "y")))
 
-; value
-(value ?(lambda x body))
+
+(value ?(lambda a body))
+(value ?(var n))
 
 ;; substitution
 ;; subst variable x with y in ... and result is ...
-[(subst x y-v ?(var a) y)
+[(subst x y ?(var a) y)
  <--
- (eval y y-v)
+ (value y)
  (= x a)]
 
 [(subst x y ?(lambda (arg a) body) (lambda (arg a) body-p))
@@ -32,10 +33,11 @@
 
 [(eval ?(app (lambda (arg x) body)
              ar)
-       body-p)
+       body-p-val)
  <--
  (eval ar ar-val)
- (subst x ar-val body body-p)]
+ (subst x ar-val body body-p)
+ (eval body-p body-p-val)]
 
 [(eval ?(app fn ar) (app fn-val ar-val))
  <--
