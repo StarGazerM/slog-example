@@ -1,0 +1,43 @@
+; calculate lambda calculus
+; ((lambda (x) x) (lambda (y) y))
+
+; (FACT id _ ...)
+(app (lambda (arg "x") (var "x"))
+     (lambda (arg "y") (var "y")))
+
+; value
+(value ?(lambda x body))
+
+;; substitution
+;; subst variable x with y in ... and result is ...
+[(subst x y-v ?(var a) y)
+ <--
+ (eval y y-v)
+ (= x a)]
+
+[(subst x y ?(lambda (arg a) body) (lambda (arg a) body-p))
+ <--
+ (=/= x a)
+ (subst x y body body-p)]
+
+[(subst x y ?(app ar fn) (app ar-p fn-p))
+ <--
+ (subst x y ar ar-p)
+ (subst x y fn fn-p)]
+
+;; calculate value
+(eval ?(var x) (var x))
+
+(eval ?(lambda x body) (lambda x body))
+
+[(eval ?(app (lambda (arg x) body)
+             ar)
+       body-p)
+ <--
+ (eval ar ar-val)
+ (subst x ar-val body body-p)]
+
+[(eval ?(app fn ar) (app fn-val ar-val))
+ <--
+ (eval fn fn-val)
+ (eval ar ar-val)]
