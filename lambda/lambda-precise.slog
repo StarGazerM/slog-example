@@ -1,0 +1,81 @@
+;; lambda calculus by need
+
+
+(do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
+              (lambda (arg "y") (app (var "y") (var "y")))))
+
+
+; (do-eval (app 0 (lambda (arg 1 "x") (app (var 2 "x") (var 3 "x")))
+;               (lambda (arg 4 "y") (var 5 "y"))))
+
+; (value ?(lambda id x body))
+; (value ?(var id n))
+
+;;
+;; Do substitution
+;;
+;; we want to do subst x with y in ... when ......
+[(do-subst x y (app e0 e1))
+ -->
+ (do-subst x y e0)
+ (do-subst x y e1)]
+
+;;
+;; Substitution by need
+;;
+;; subst variable x with y in ... and result is ...
+[(subst x y (var a) y)
+ <--
+ (do-subst x y (var a))
+ (= x a)]
+[(subst x y (lambda (arg a) body) (lambda (arg a) body-p))
+ <--
+ (do-subst x y (lambda (arg a) body))
+ (=/= x a)
+ (subst x y body body-p)]
+[(subst x y (app ar fn) (app ar-val fn-val))
+ <--
+ (do-subst x y (app ar fn))
+ (subst x y ar ar-val)
+ (subst x y fn fn-val)]
+
+;;
+;; Do Evaluation
+;;
+;; we want to eval expr ... when ......
+[(do-eval (app e0 e1))
+ -->
+ (do-eval e0)
+ (do-eval e1)]
+
+[(do-eval body)
+ (do-subst x e1-val body)
+ <--
+ (do-eval (app e0 e1))
+ (eval e0 (lambda (arg x) body))
+ (eval e1 e1-val)]
+
+[(do-eval after-subst)
+ <--
+ (subst x e1-val body after-subst)]
+
+;;
+;; Evaluation by need
+;;
+;; calculate value
+[(eval (var a) (var a))
+ <--
+ (do-eval (var a))]
+
+[(eval (lambda x body) (lambda x body))
+ <--
+ (do-eval (lambda x body))]
+
+[(eval (app e0 e1) app-val)
+ <--
+ (do-eval (app e0 e1))
+ (eval e0 (lambda (arg x) body))
+ (eval e1 e1-val)
+ (subst x e1-val body after-subst)
+ (eval after-subst app-val)]
+

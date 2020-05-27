@@ -1,45 +1,49 @@
-; calculate lambda calculus
-; ((lambda (x) x) (lambda (y) y))
-
-; (FACT id _ ...)
+;; Evalaute lambda calculus terms using substitution
+;; In Racket...
+;; ((lambda (x) (x x)) (lambda (y) y))
+;; (app (lambda (arg "x") (app (var "x") (var "x")))
+;;      (lambda (arg "y") (var "y")))
 (app (lambda (arg "x") (app (var "x") (var "x")))
      (lambda (arg "y") (var "y")))
 
+;;
+;; Values
+;;
+;; Copy all existing terms into the `value` relation
+(value ?(lambda x body))
+(value ?(var x))
 
-(value ?(lambda a body))
-(value ?(var n))
-
-;; substitution
+;;
+;; Substitution (naive)
+;;
 ;; subst variable x with y in ... and result is ...
 [(subst x y ?(var a) y)
  <--
  (value y)
  (= x a)]
-
 [(subst x y ?(lambda (arg a) body) (lambda (arg a) body-p))
  <--
  (=/= x a)
  (subst x y body body-p)]
-
-[(subst x y ?(app ar fn) (app ar-p fn-p))
+[(subst x y ?(app ar fn) (app ar-val fn-val))
  <--
- (subst x y ar ar-p)
- (subst x y fn fn-p)]
+ (subst x y ar ar-val)
+ (subst x y fn fn-val)]
 
+; ;;
+;; Evaluation
+;;
 ;; calculate value
-(eval ?(var x) (var x))
+(eval ?(var x) (value (var x)))
+(eval ?(lambda x body) (value (lambda x body)))
 
-(eval ?(lambda x body) (lambda x body))
+[(eval e0 (value (lambda (arg x) e-body)))
+ (eval e1 e-value)
+ (subst x e-value e-body e-result)
+ (eval e-result e-result-val)
+ -->
+ (eval ?(app e0 e1) e-result-val)] 
 
-[(eval ?(app (lambda (arg x) body)
-             ar)
-       body-p-val)
- <--
- (eval ar ar-val)
- (subst x ar-val body body-p)
- (eval body-p body-p-val)]
 
-[(eval ?(app fn ar) (app fn-val ar-val))
- <--
- (eval fn fn-val)
- (eval ar ar-val)]
+
+
