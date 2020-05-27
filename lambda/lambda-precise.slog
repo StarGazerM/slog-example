@@ -4,13 +4,6 @@
 (do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
               (lambda (arg "y") (app (var "y") (var "y")))))
 
-
-; (do-eval (app 0 (lambda (arg 1 "x") (app (var 2 "x") (var 3 "x")))
-;               (lambda (arg 4 "y") (var 5 "y"))))
-
-; (value ?(lambda id x body))
-; (value ?(var id n))
-
 ;;
 ;; Do substitution
 ;;
@@ -48,16 +41,16 @@
  (do-eval e0)
  (do-eval e1)]
 
-[(do-eval body)
- (do-subst x e1-val body)
- <--
- (do-eval (app e0 e1))
+[(do-eval (app e0 e1))
  (eval e0 (lambda (arg x) body))
- (eval e1 e1-val)]
+ (eval e1 e1-val)
+ -->
+ (do-eval body)
+ (do-subst x e1-val body)]
 
-[(do-eval after-subst)
- <--
- (subst x e1-val body after-subst)]
+[(subst x e1-val body after-subst)
+ -->
+ (do-eval after-subst)]
 
 ;;
 ;; Evaluation by need

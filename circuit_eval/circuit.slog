@@ -1,0 +1,66 @@
+;;
+;; Forward Circuit Evaluation
+;; Yield the value of each wire, given the input wire assignments
+;;
+
+;;
+;; bitwise gate
+;;
+;; logical gate and/or/not
+;; gate `and/or` has s result output, and two input o1 o2
+;; gate `not` has a result output and one input o1
+;; each input and output are logic variable
+;;
+;; falt style Facts
+(g-and (var "s") (var "c") (var "d"))
+(g-and (var "r") (var "a") (var "b"))
+(g-and (var "t") (var "d") (var "e"))
+
+(g-or (var "x") (var "r") (var "s"))
+
+(g-not (var "y") (var "t"))
+
+;; input of whole logic circuit 
+(input (var "a") "true")
+(input (var "b") "false")
+(input (var "c") "true")
+(input (var "d") "true")
+(input (var "e") "false")
+
+(output (var "s"))
+(output (var "r"))
+(output (var "t"))
+(output (var "x"))
+(output (var "y"))
+
+;; query a wire value ; and short circuit
+[(g-assignment x "true") <-- (input x "true")]
+[(g-assignment x "true")
+ <--
+ (g-and x o1 o2) (g-assignment o1 "true") (g-assignment o2 "true")]
+[(g-assignment x "true")
+ <--
+ (g-or x o1 o2)
+ (or (g-assignment o1 "true") (g-assignment o2 "true"))]
+[(g-assignment x "true")
+ <--
+ (g-not x o1) (g-assignment o1 "false")]
+
+
+[(g-assignment x "false") <-- (input x "false")]
+[(g-assignment x "false")
+ <--
+ (g-and x o1 o2)
+ (or (g-assignment o1 "false")
+     (g-assignment o2 "false"))]
+[(g-assignment x "false")
+ <--
+ (g-or x o1 o2) (g-assignment o1 "false") (g-assignment o2 "false")]
+[(g-assignment x "false")
+ <--
+ (g-not x o1) (g-assignment o1 "true")]
+
+[(yield-output x val)
+ <--
+ (output (var x))
+ (g-assignment (var x) val)]

@@ -8,3 +8,4 @@ slog do not support some of language feature in souffle for example "not" so, ju
 - amicable(need sum)
 - anderson
 - lambda calculus
+- circuit evaluation
