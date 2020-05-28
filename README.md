@@ -9,3 +9,4 @@ slog do not support some of language feature in souffle for example "not" so, ju
 - anderson
 - lambda calculus
 - circuit evaluation
+- clique
