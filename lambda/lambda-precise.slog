@@ -1,4 +1,4 @@
-;; lambda calculus by need
+;; lambda calculus in call by value
 
 
 (do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
