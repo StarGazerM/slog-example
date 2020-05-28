@@ -2,7 +2,7 @@
 
 
 (do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
-              (lambda (arg "y") (app (var "y") (var "y")))))
+              (lambda (arg "y") (var "y"))))
 
 ;;
 ;; Do substitution
@@ -14,7 +14,7 @@
  (do-subst x y e1)]
 
 ;;
-;; Substitution by need
+;; Substitution call by value
 ;;
 ;; subst variable x with y in ... and result is ...
 [(subst x y (var a) y)
@@ -45,15 +45,18 @@
  (eval e0 (lambda (arg x) body))
  (eval e1 e1-val)
  -->
- (do-eval body)
  (do-subst x e1-val body)]
+
+[(do-eval after-subst)
+ <--
+ (subst x y e after-subst)]
 
 [(subst x e1-val body after-subst)
  -->
  (do-eval after-subst)]
 
 ;;
-;; Evaluation by need
+;; Evaluation call by value
 ;;
 ;; calculate value
 [(eval (var a) (var a))
