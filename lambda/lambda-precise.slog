@@ -1,8 +1,18 @@
-;; lambda calculus in call by value
+;; lambda calculus
 
 
-(do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
-              (lambda (arg "y") (var "y"))))
+; (do-eval (app (lambda (arg "x") (app (var "x") (var "x")))
+;               (lambda (arg "y") (var "y"))))
+
+(do-eval (app (app (lambda (arg "n")
+                           (lambda (arg "m")
+                                   (lambda (arg "f")
+                                           (lambda (arg "x")
+                                                   (app (app (var "n") (var "f"))
+                                                        (app (app (var "m") (var "f"))
+                                                             (var "x")))))))
+                   (lambda (arg "f") (lambda (arg "x") (app (var "f") (var "x")))))
+              (lambda (arg "f") (lambda (arg "x") (app (var "f") (var "x"))))))
 
 ;;
 ;; Do substitution
@@ -13,19 +23,36 @@
  (do-subst x y e0)
  (do-subst x y e1)]
 
+[(do-subst x y (lambda (arg a) body))
+ (=/= x a)
+ -->
+ (do-subst x y body)]
+
 ;;
-;; Substitution call by value
+;; Substitution call
 ;;
 ;; subst variable x with y in ... and result is ...
 [(subst x y (var a) y)
  <--
  (do-subst x y (var a))
  (= x a)]
+
+[(subst x y (var a) (var a))
+ <--
+ (do-subst x y (var a))
+ (=/= x a)]
+
 [(subst x y (lambda (arg a) body) (lambda (arg a) body-p))
  <--
  (do-subst x y (lambda (arg a) body))
  (=/= x a)
  (subst x y body body-p)]
+
+[(subst x y (lambda (arg a) body) (lambda (arg a) body))
+ <--
+ (do-subst x y (lambda (arg a) body))
+ (= x a)]
+ 
 [(subst x y (app ar fn) (app ar-val fn-val))
  <--
  (do-subst x y (app ar fn))
@@ -56,7 +83,7 @@
  (do-eval after-subst)]
 
 ;;
-;; Evaluation call by value
+;; Evaluation call
 ;;
 ;; calculate value
 [(eval (var a) (var a))
